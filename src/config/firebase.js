@@ -2,6 +2,19 @@ const dotenv = require("dotenv");
 const admin = require("firebase-admin");
 
 dotenv.config();
+const requiredEnvVars = [
+  "FIREBASE_PROJECT_ID", 
+  "FIREBASE_PRIVATE_KEY_ID", 
+  "FIREBASE_PRIVATE_KEY", 
+  "FIREBASE_CLIENT_EMAIL", 
+  "FIREBASE_CLIENT_ID"
+];
+
+requiredEnvVars.forEach((envVar) => {
+  if (!process.env[envVar]) {
+    throw new Error(`${envVar} is not set in .env file`);
+  }
+});
 
 const serviceAccount = {
   type: "service_account",
@@ -18,7 +31,7 @@ const serviceAccount = {
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: `${serviceAccount.project_id}.appspot.com`,
+  storageBucket: `${process.env.FIREBASE_PROJECT_ID}.appspot.com`, // Use environment variable for bucket
 });
 
 const db = admin.firestore();
